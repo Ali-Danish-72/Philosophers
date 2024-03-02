@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/23 19:49:50 by mdanish           #+#    #+#             */
-/*   Updated: 2024/02/29 12:18:19 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/03/02 20:08:49 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,54 @@ void	what_to_do_with_forks(bool pick_up, t_philo *philo, t_constants *consts)
 	pthread_mutex_unlock(consts->forks_mutexes + philo->fork_next_id - 1);
 }
 
+// int	eating(t_philo *philo, t_constants *consts)
+// {
+// 	long int	timer_counter;
+
+// 	if (check_death(philo))
+// 		return (1);
+// 	what_to_do_with_forks(true, philo, consts);
+// 	if (!philo->can_eat)
+// 		print_logs(philo, 3);
+// 	while (!philo->can_eat)
+// 	{
+// 		if (check_death(philo))
+// 			return (1);
+// 		what_to_do_with_forks(true, philo, consts);
+// 	}
+// 	print_logs(philo, 1);
+// 	timer_counter = 0;
+// 	gettimeofday(&philo->initial_timer_time, NULL);
+// 	while (timer_counter < philo->eat_clock)
+// 	{
+// 		gettimeofday(&philo->loop_timer_time, NULL);
+// 		timer_counter = (philo->loop_timer_time.tv_sec - philo->initial_timer_time.tv_sec) * 1000;
+// 		timer_counter += (philo->loop_timer_time.tv_usec - philo->initial_timer_time.tv_usec) / 1000;
+// 	}
+// 	what_to_do_with_forks(false, philo, consts);
+// 	return (0);
+// }
+
+// int	sleeping(t_philo *philo)
+// {
+// 	long int	ms;
+
+// 	if (check_death(philo))
+// 		return (1);
+// 	print_logs(philo, 2);
+// 	ms = 0;
+// 	gettimeofday(&philo->initial_timer_time, NULL);
+// 	while (ms < philo->sleep_clock)
+// 	{
+// 		gettimeofday(&philo->loop_timer_time, NULL);
+// 		ms = (philo->loop_timer_time.tv_sec - philo->initial_timer_time.tv_sec) * 1000;
+// 		ms += (philo->loop_timer_time.tv_usec - philo->initial_timer_time.tv_usec) / 1000;
+// 	}
+// 	return (0);
+// }
+
 int	eating(t_philo *philo, t_constants *consts)
 {
-	int	timer_counter;
-
 	while (!philo->can_eat && !check_death(philo))
 	{
 		what_to_do_with_forks(true, philo, consts);
@@ -55,31 +99,17 @@ int	eating(t_philo *philo, t_constants *consts)
 			print_logs(philo, 1);
 		}
 	}
-	timer_counter = 10;
-	while (timer_counter--)
-	{
-		if (check_death(philo))
-			return (print_logs(philo, 4), 1);
-		usleep(philo->eat_clock * 100);
-	}
+	usleep(philo->eat_clock * 1000);
 	what_to_do_with_forks(false, philo, consts);
 	return (0);
 }
 
 int	sleeping(t_philo *philo)
 {
-	int	timer_counter;
-
 	if (check_death(philo))
 		return (print_logs(philo, 4), 1);
 	print_logs(philo, 2);
-	timer_counter = 10;
-	while (timer_counter--)
-	{
-		if (check_death(philo))
-			return (print_logs(philo, 4), 1);
-		usleep(philo->sleep_clock * 100);
-	}
+	usleep(philo->sleep_clock * 1000);
 	return (0);
 }
 

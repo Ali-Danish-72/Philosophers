@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 17:23:17 by mdanish           #+#    #+#             */
-/*   Updated: 2024/02/28 18:57:14 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/03/02 19:56:02 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ long int	calculate_timestamp(t_philo *philo, bool for_printing)
 {
 	long int	ms;
 
-	gettimeofday(&philo->current_time, NULL);
 	if (for_printing)
 	{
 		ms = (philo->current_time.tv_sec - \
@@ -58,6 +57,7 @@ void	print_logs(t_philo *philo, int log_type)
 {
 	if (log_type == 3)
 		philo->print_thinking = false;
+	gettimeofday(&philo->current_time, NULL);
 	pthread_mutex_lock(&philo->constants->print_mutex);
 	if (log_type == 1)
 	{
@@ -69,7 +69,7 @@ void	print_logs(t_philo *philo, int log_type)
 		printf(SLEEP_LOG, calculate_timestamp(philo, true), philo->fork_id);
 	else if (log_type == 3)
 		printf(THINK_LOG, calculate_timestamp(philo, true), philo->fork_id);
-	else if (log_type == 4 && philo->death_type == 2)
+	else if (log_type == 4)
 		printf(DEATH_LOG, calculate_timestamp(philo, true), philo->fork_id);
 	pthread_mutex_unlock(&philo->constants->print_mutex);
 }
@@ -84,13 +84,14 @@ int	check_death(t_philo *philo)
 		is_dead = true;
 	pthread_mutex_unlock(&philo->death_mutex);
 	if (is_dead)
-		return (philo->death_type = 1);
+		return (1);
 	if (calculate_timestamp(philo, false) >= philo->death_clock)
 	{
 		pthread_mutex_lock(&philo->death_mutex);
 		philo->is_dead = true;
 		pthread_mutex_unlock(&philo->death_mutex);
-		return (philo->death_type = 2);
+		print_logs(philo, 4);
+		return (1);
 	}
-	return (philo->death_type = 0);
+	return (0);
 }

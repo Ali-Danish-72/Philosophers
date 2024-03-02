@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/15 18:15:15 by mdanish           #+#    #+#             */
-/*   Updated: 2024/02/28 13:13:33 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/03/02 19:21:28 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,11 +55,12 @@ struct s_philo
 	bool			end_simulation;
 	bool			is_dead;
 	bool			print_thinking;
-	int				death_type;
 	pthread_t		thread;
 	t_mutex			death_mutex;
 	t_time			start_time;
 	t_time			current_time;
+	t_time			initial_timer_time;
+	t_time			loop_timer_time;
 	t_constants		*constants;
 	unsigned int	death_clock;
 	unsigned int	eat_clock;
