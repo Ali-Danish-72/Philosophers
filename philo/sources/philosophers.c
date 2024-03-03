@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/15 17:33:12 by mdanish           #+#    #+#             */
-/*   Updated: 2024/02/28 13:14:19 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/03/03 14:57:04 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,33 @@ int	print_error_message(t_constants *consts)
 	else if (consts->exit_code == 12)
 		printf("%s", DEATH_THREAD_FAIL);
 	return (memory_management(consts));
+}
+
+void	kill_the_philos(t_constants *constants, bool death_flag)
+{
+	unsigned int	end_simulation_count;
+	unsigned int	index;
+
+	index = constants->philo_count;
+	while (death_flag && index--)
+	{
+		pthread_mutex_lock(&(constants->philo + index)->death_mutex);
+		(constants->philo + index)->end_simulation = true;
+		pthread_mutex_unlock(&(constants->philo + index)->death_mutex);
+	}
+	end_simulation_count = false;
+	while (!death_flag && index--)
+	{
+		pthread_mutex_lock(&(constants->philo + index)->death_mutex);
+		if ((constants->philo + index)->end_simulation)
+			end_simulation_count += true;
+		pthread_mutex_unlock(&(constants->philo + index)->death_mutex);
+		if (!index && end_simulation_count != constants->philo_count)
+		{
+			end_simulation_count = false;
+			index = constants->philo_count;
+		}
+	}
 }
 
 int	main(int ac, char **av)

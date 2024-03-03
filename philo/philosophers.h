@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/15 18:15:15 by mdanish           #+#    #+#             */
-/*   Updated: 2024/03/02 19:21:28 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/03/03 14:56:29 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,10 @@ typedef struct s_philo	t_philo;
 
 struct s_philo
 {
-	bool			can_eat;
+	bool			has_left_fork;
+	bool			has_right_fork;
 	bool			end_simulation;
 	bool			is_dead;
-	bool			print_thinking;
 	pthread_t		thread;
 	t_mutex			death_mutex;
 	t_time			start_time;
@@ -91,13 +91,20 @@ struct s_consts
 
 long int			calculate_timestamp(t_philo *philo, bool for_printing);
 void				*death_thread(void *consts);
+void				drop_fork(t_philo *philo, t_constants *consts, bool mine);
+int					eating(t_philo *philo, t_constants *consts);
 size_t				ft_atoi(char const *string);
+void				ft_usleep(t_philo *philo, long int clock);
 int					initialise_constants(t_constants *constants, char **av);
 int					initialise_philosophers(t_constants *consts);
 int					check_death(t_philo *philo);
 int					create_threads(t_constants *philo);
+void				kill_the_philos(t_constants *constants, bool death_flag);
+int					memory_management(t_constants *consts);
+void				mutex_destruction(t_constants *consts);
 int					one_philo(t_constants *consts);
 int					parse(t_constants *philo, char **av);
+void				pick_up_fork(t_philo *philo, t_constants *consts, bool me);
 int					print_error_message(t_constants *philo);
 void				print_logs(t_philo *philo, int log_type);
 void				*routine(void *philosopher);

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 17:23:17 by mdanish           #+#    #+#             */
-/*   Updated: 2024/03/02 19:56:02 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/03/03 15:29:08 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,21 +55,17 @@ long int	calculate_timestamp(t_philo *philo, bool for_printing)
 
 void	print_logs(t_philo *philo, int log_type)
 {
-	if (log_type == 3)
-		philo->print_thinking = false;
 	gettimeofday(&philo->current_time, NULL);
 	pthread_mutex_lock(&philo->constants->print_mutex);
 	if (log_type == 1)
-	{
 		printf(FORK_LOG, calculate_timestamp(philo, true), philo->fork_id);
-		printf(FORK_LOG, calculate_timestamp(philo, true), philo->fork_id);
-		printf(EAT_LOG, calculate_timestamp(philo, true), philo->fork_id);
-	}
 	else if (log_type == 2)
-		printf(SLEEP_LOG, calculate_timestamp(philo, true), philo->fork_id);
+		printf(EAT_LOG, calculate_timestamp(philo, true), philo->fork_id);
 	else if (log_type == 3)
-		printf(THINK_LOG, calculate_timestamp(philo, true), philo->fork_id);
+		printf(SLEEP_LOG, calculate_timestamp(philo, true), philo->fork_id);
 	else if (log_type == 4)
+		printf(THINK_LOG, calculate_timestamp(philo, true), philo->fork_id);
+	else if (log_type == 5)
 		printf(DEATH_LOG, calculate_timestamp(philo, true), philo->fork_id);
 	pthread_mutex_unlock(&philo->constants->print_mutex);
 }
@@ -85,13 +81,30 @@ int	check_death(t_philo *philo)
 	pthread_mutex_unlock(&philo->death_mutex);
 	if (is_dead)
 		return (1);
+	gettimeofday(&philo->current_time, NULL);
 	if (calculate_timestamp(philo, false) >= philo->death_clock)
 	{
 		pthread_mutex_lock(&philo->death_mutex);
 		philo->is_dead = true;
 		pthread_mutex_unlock(&philo->death_mutex);
-		print_logs(philo, 4);
+		print_logs(philo, 5);
 		return (1);
 	}
 	return (0);
+}
+
+void	ft_usleep(t_philo *philo, long int clock)
+{
+	long int	timer_counter;
+
+	timer_counter = 0;
+	gettimeofday(&philo->initial_timer_time, NULL);
+	while (timer_counter < (clock + 1))
+	{
+		gettimeofday(&philo->loop_timer_time, NULL);
+		timer_counter = (philo->loop_timer_time.tv_sec - \
+			philo->initial_timer_time.tv_sec) * 1000;
+		timer_counter += (philo->loop_timer_time.tv_usec - \
+			philo->initial_timer_time.tv_usec) / 1000;
+	}
 }

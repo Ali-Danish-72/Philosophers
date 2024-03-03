@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 17:24:04 by mdanish           #+#    #+#             */
-/*   Updated: 2024/02/28 19:30:23 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/03/03 15:34:18 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,15 @@ int	one_philo(t_constants *consts)
 	t_time		end;
 	long int	milli_seconds;
 
+	milli_seconds = 0;
 	printf("0 1 is thinking\n");
 	gettimeofday(&start, NULL);
-	usleep(consts->death_clock * 1000);
-	gettimeofday(&end, NULL);
-	milli_seconds = (end.tv_sec - start.tv_sec) * 1000;
-	milli_seconds += (end.tv_usec - start.tv_usec) / 1000;
+	while (milli_seconds < (consts->death_clock + 1))
+	{
+		gettimeofday(&end, NULL);
+		milli_seconds = (end.tv_sec - start.tv_sec) * 1000;
+		milli_seconds += (end.tv_usec - start.tv_usec) / 1000;
+	}
 	printf("%ld 1 died\n", milli_seconds);
 	return (0);
 }
