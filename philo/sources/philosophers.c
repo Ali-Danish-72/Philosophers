@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/15 17:33:12 by mdanish           #+#    #+#             */
-/*   Updated: 2024/03/03 14:57:04 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/03/03 15:55:13 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ int	main(int ac, char **av)
 		return (consts.exit_code = 1, print_error_message(&consts));
 	if (parse(&consts, ++av))
 		return (print_error_message(&consts));
-	if (!consts.philo_count)
+	if (consts.philo_count == 1 || !consts.philo_count || !consts.meal_count)
 		return (0);
 	if (create_threads(&consts))
 		return (print_error_message(&consts));

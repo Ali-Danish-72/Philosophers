@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 17:24:04 by mdanish           #+#    #+#             */
-/*   Updated: 2024/03/03 15:34:18 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/03/03 15:53:39 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ int	one_philo(t_constants *consts)
 	t_time		end;
 	long int	milli_seconds;
 
+	if (!consts->philo_count || !consts->meal_count)
+		return (0);
 	milli_seconds = 0;
 	printf("0 1 is thinking\n");
 	gettimeofday(&start, NULL);
@@ -35,8 +37,6 @@ int	create_threads(t_constants *consts)
 {
 	unsigned int	counter;
 
-	if (consts->philo_count == 1)
-		return (one_philo(consts));
 	counter = consts->philo_count;
 	gettimeofday(&consts->initial_time, NULL);
 	while (counter--)
@@ -87,7 +87,7 @@ int	initialise_constants(t_constants *consts, char **av)
 	consts->sleep_clock = ft_atoi(*av++);
 	consts->meal_count = ft_atoi(*av);
 	if (consts->philo_count == 1 || !consts->philo_count || !consts->meal_count)
-		return (0);
+		return (one_philo(consts));
 	if (pthread_mutex_init(&consts->time_mutex, NULL))
 		return (consts->exit_code = 4);
 	if (pthread_mutex_init(&consts->print_mutex, NULL))
@@ -128,7 +128,8 @@ int	parse(t_constants *consts, char **av)
 	consts->forks = NULL;
 	consts->forks_mutexes = NULL;
 	if (initialise_constants(consts, av) || \
-		(consts->philo_count > 1 && initialise_philosophers(consts)))
+		(consts->philo_count > 1 && consts->meal_count && \
+		initialise_philosophers(consts)))
 		return (-1);
 	return (0);
 }
