@@ -6,13 +6,13 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 17:24:04 by mdanish           #+#    #+#             */
-/*   Updated: 2024/03/03 15:53:39 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/04/22 20:01:11 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philosophers.h"
 
-int	one_philo(t_constants *consts)
+int	one_philo(t_consts *consts)
 {
 	t_time		start;
 	t_time		end;
@@ -33,40 +33,38 @@ int	one_philo(t_constants *consts)
 	return (0);
 }
 
-int	create_threads(t_constants *consts)
+int	create_threads(t_consts *consts)
 {
-	unsigned int	counter;
-
-	counter = consts->philo_count;
+	consts->thread_count = consts->philo_count;
 	gettimeofday(&consts->initial_time, NULL);
-	while (counter--)
+	while (consts->thread_count--)
 	{
-		if (pthread_create(&(consts->philo + counter)->thread, NULL, routine, \
-			consts->philo + counter))
-			return (consts->exit_code = 11);
+		if (pthread_create(&(consts->philo + consts->thread_count)->thread, \
+			NULL, routine, consts->philo + consts->thread_count))
+			return (consts->exit_code = 10);
 		usleep(100);
 	}
 	if (pthread_create(&consts->death_thread, NULL, death_thread, consts))
-		return (consts->exit_code = 12);
+		return (consts->exit_code = 11);
 	pthread_join(consts->death_thread, NULL);
-	counter = consts->philo_count;
-	while (counter--)
-		pthread_join((consts->philo + counter)->thread, NULL);
+	consts->thread_count = consts->philo_count;
+	while (consts->thread_count--)
+		pthread_join((consts->philo + consts->thread_count)->thread, NULL);
 	return (consts->exit_code = 0);
 }
 
-int	initialise_philosophers(t_constants *consts)
+int	initialise_philosophers(t_consts *consts)
 {
-	unsigned int	*count;
+	uint	*count;
 
 	consts->mutex_count = consts->philo_count;
 	count = &consts->mutex_count;
 	while ((*count)--)
 	{
 		if (pthread_mutex_init(consts->forks_mutexes + *count, NULL))
-			return (consts->exit_code = 9);
+			return (consts->exit_code = 8);
 		if (pthread_mutex_init(&(consts->philo + *count)->death_mutex, NULL))
-			return (consts->exit_code = 10);
+			return (consts->exit_code = 9);
 		(consts->philo + *count)->fork_id = consts->philo_count - *count;
 		(consts->philo + *count)->fork_next_id = consts->philo_count - \
 			*count + 1;
@@ -79,7 +77,7 @@ int	initialise_philosophers(t_constants *consts)
 	return (0);
 }
 
-int	initialise_constants(t_constants *consts, char **av)
+int	initialise_constants(t_consts *consts, char **av)
 {
 	consts->philo_count = ft_atoi(*av++);
 	consts->death_clock = ft_atoi(*av++);
@@ -88,26 +86,24 @@ int	initialise_constants(t_constants *consts, char **av)
 	consts->meal_count = ft_atoi(*av);
 	if (consts->philo_count == 1 || !consts->philo_count || !consts->meal_count)
 		return (one_philo(consts));
-	if (pthread_mutex_init(&consts->time_mutex, NULL))
-		return (consts->exit_code = 4);
 	if (pthread_mutex_init(&consts->print_mutex, NULL))
-		return (consts->exit_code = 5);
+		return (consts->exit_code = 4);
 	consts->philo = malloc(consts->philo_count * sizeof(t_philo));
 	if (!consts->philo)
-		return (consts->exit_code = 6);
+		return (consts->exit_code = 5);
 	consts->forks = malloc(consts->philo_count * sizeof(bool));
 	if (!consts->forks)
-		return (consts->exit_code = 7);
+		return (consts->exit_code = 6);
 	consts->forks_mutexes = malloc(consts->philo_count * sizeof(t_mutex));
-	if (!consts->forks)
-		return (consts->exit_code = 8);
+	if (!consts->forks_mutexes)
+		return (consts->exit_code = 7);
 	memset(consts->philo, 0, consts->philo_count * sizeof(t_philo));
 	memset(consts->forks, 0, consts->philo_count * sizeof(bool));
 	memset(consts->forks_mutexes, 0, consts->philo_count * sizeof(t_mutex));
 	return (0);
 }
 
-int	parse(t_constants *consts, char **av)
+int	parse(t_consts *consts, char **av)
 {
 	int	i;
 	int	j;

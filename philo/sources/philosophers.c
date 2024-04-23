@@ -6,13 +6,13 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/15 17:33:12 by mdanish           #+#    #+#             */
-/*   Updated: 2024/03/03 15:55:13 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/04/22 18:00:37 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philosophers.h"
 
-void	mutex_destruction(t_constants *consts)
+void	mutex_destruction(t_consts *consts)
 {
 	pthread_mutex_destroy(&consts->time_mutex);
 	if (consts->exit_code > 5 || !consts->exit_code)
@@ -40,16 +40,16 @@ void	mutex_destruction(t_constants *consts)
 	}
 }
 
-int	memory_management(t_constants *consts)
+int	memory_management(t_consts *consts)
 {
 	if (consts->exit_code > 4 || \
 		(!consts->exit_code && consts->philo_count != 1))
 	{
 		mutex_destruction(consts);
-		while (consts->exit_code == 11 && ++consts->thread_count != \
+		while (consts->exit_code == 10 && ++consts->thread_count != \
 			consts->philo_count)
 			pthread_join((consts->philo + consts->thread_count)->thread, NULL);
-		while (consts->exit_code == 12 && consts->philo_count--)
+		while (consts->exit_code == 11 && consts->philo_count--)
 			pthread_join((consts->philo + consts->philo_count)->thread, NULL);
 		free(consts->philo);
 		free(consts->forks);
@@ -58,7 +58,7 @@ int	memory_management(t_constants *consts)
 	return (consts->exit_code);
 }
 
-int	print_error_message(t_constants *consts)
+int	print_error_message(t_consts *consts)
 {
 	if (consts->exit_code == 1)
 		printf("%s%s%s", INVALID_ARG_COUNT, ARGS1, ARGS2);
@@ -67,30 +67,28 @@ int	print_error_message(t_constants *consts)
 	else if (consts->exit_code == 3)
 		printf("%s%s", INVALID_ARGS, INVALID_MESSAGE);
 	else if (consts->exit_code == 4)
-		printf("%s", TIME_MUTEX_FAIL);
-	else if (consts->exit_code == 5)
 		printf("%s", PRINT_MUTEX_FAIL);
-	else if (consts->exit_code == 6)
+	else if (consts->exit_code == 5)
 		printf("%s", PHILO_FAIL);
-	else if (consts->exit_code == 7)
+	else if (consts->exit_code == 6)
 		printf("%s", FORKS_FAIL);
-	else if (consts->exit_code == 8)
+	else if (consts->exit_code == 7)
 		printf("%s", FORKS_MUTEXES_FAIL);
-	else if (consts->exit_code == 9)
+	else if (consts->exit_code == 8)
 		printf("%s", FORK_MUTEX_FAIL);
-	else if (consts->exit_code == 10)
+	else if (consts->exit_code == 9)
 		printf("%s", DEATH_MUTEX_FAIL);
-	else if (consts->exit_code == 11)
+	else if (consts->exit_code == 10)
 		printf("%s", PHILO_THREAD_FAIL);
-	else if (consts->exit_code == 12)
+	else if (consts->exit_code == 11)
 		printf("%s", DEATH_THREAD_FAIL);
 	return (memory_management(consts));
 }
 
-void	kill_the_philos(t_constants *constants, bool death_flag)
+void	kill_the_philos(t_consts *constants, bool death_flag)
 {
-	unsigned int	end_simulation_count;
-	unsigned int	index;
+	uint	end_simulation_count;
+	uint	index;
 
 	index = constants->philo_count;
 	while (death_flag && index--)
@@ -116,7 +114,7 @@ void	kill_the_philos(t_constants *constants, bool death_flag)
 
 int	main(int ac, char **av)
 {
-	t_constants	consts;
+	t_consts	consts;
 
 	if (ac < 5 || ac > 6)
 		return (consts.exit_code = 1, print_error_message(&consts));

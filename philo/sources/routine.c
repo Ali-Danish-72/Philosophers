@@ -6,13 +6,13 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/23 19:49:50 by mdanish           #+#    #+#             */
-/*   Updated: 2024/03/03 14:57:26 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/04/22 17:59:36 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philosophers.h"
 
-void	pick_up_fork(t_philo *philo, t_constants *consts, bool mine)
+void	pick_up_fork(t_philo *philo, t_consts *consts, bool mine)
 {
 	if (mine && !philo->has_left_fork)
 	{
@@ -40,7 +40,7 @@ void	pick_up_fork(t_philo *philo, t_constants *consts, bool mine)
 	}
 }
 
-void	drop_fork(t_philo *philo, t_constants *consts, bool mine)
+void	drop_fork(t_philo *philo, t_consts *consts, bool mine)
 {
 	if (mine)
 	{
@@ -56,7 +56,7 @@ void	drop_fork(t_philo *philo, t_constants *consts, bool mine)
 	pthread_mutex_unlock(consts->forks_mutexes + philo->fork_next_id - 1);
 }
 
-int	eating(t_philo *philo, t_constants *consts)
+int	eating(t_philo *philo, t_consts *consts)
 {
 	if (check_death(philo))
 		return (1);
@@ -83,12 +83,12 @@ int	eating(t_philo *philo, t_constants *consts)
 
 void	*death_thread(void *consts)
 {
-	bool			death_flag;
-	bool			end_simulation;
-	t_constants		*constants;
-	unsigned int	index;
+	bool		death_flag;
+	bool		end_simulation;
+	t_consts	*constants;
+	uint		index;
 
-	constants = (t_constants *)consts;
+	constants = (t_consts *)consts;
 	index = constants->philo_count;
 	death_flag = false;
 	end_simulation = false;
